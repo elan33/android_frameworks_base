@@ -460,9 +460,7 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
 
         CharSequence dateString = null;
 
-        String result = "";
-        String timeResult = sdf.format(mCalendar.getTime());
-        String dateResult = "";
+        String result = is24 ? sdf.format(mCalendar.getTime()) : DateFormat.format(format, mCalendar.getTime()).toString();
 
         if (mClockDateDisplay != CLOCK_DATE_DISPLAY_GONE) {
             Date now = new Date();
