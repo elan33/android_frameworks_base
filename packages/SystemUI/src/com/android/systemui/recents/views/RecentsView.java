@@ -86,6 +86,7 @@ import com.android.internal.colorextraction.ColorExtractor;
 import com.android.internal.colorextraction.drawable.GradientDrawable;
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
+import com.android.internal.util.aosip.ShakeSensorManager;
 import com.android.settingslib.Utils;
 import com.android.systemui.Interpolators;
 import com.android.systemui.R;
@@ -150,7 +151,7 @@ import java.util.List;
  * This view is the the top level layout that contains TaskStacks (which are laid out according
  * to their SpaceNode bounds.
  */
-public class RecentsView extends FrameLayout {
+public class RecentsView extends FrameLayout implements ShakeSensorManager.ShakeListener {
 
     private static final String TAG = "RecentsView";
 
@@ -176,6 +177,7 @@ public class RecentsView extends FrameLayout {
 
 
     private boolean mAwaitingFirstLayout = true;
+    private ShakeSensorManager mShakeSensorManager;
 
     @ViewDebug.ExportedProperty(category="recents")
     Rect mSystemInsets = new Rect();
@@ -255,6 +257,7 @@ public class RecentsView extends FrameLayout {
         mEmptyView = (TextView) inflater.inflate(R.layout.recents_empty, this, false);
         addView(mEmptyView);
         mSettingsObserver = new SettingsObserver(new Handler());
+        mShakeSensorManager = new ShakeSensorManager(mContext, this);
 
         if (mStackActionButton != null) {
             removeView(mStackActionButton);
@@ -306,6 +309,23 @@ public class RecentsView extends FrameLayout {
                 systemBarsStyle);
     }
 
+    @Override
+    public void onShake() {
+        EventBus.getDefault().send(new DismissAllTaskViewsEvent());
+        enableShake(false);
+    }
+     public void enableShake(boolean enableShakeClean) {
+        if (mShakeSensorManager == null)
+            return;
+        boolean enableShakeCleanByUser = Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.SHAKE_CLEAN_RECENT, 1) == 1;
+        if (enableShakeClean && enableShakeCleanByUser) {
+            mShakeSensorManager.enable(20);
+        } else {
+            mShakeSensorManager.disable();
+        }
+     }
+
     /**
      * Called from RecentsActivity when it is relaunched.
      */
@@ -320,6 +340,7 @@ public class RecentsView extends FrameLayout {
             mTaskStackView.setSystemInsets(mSystemInsets);
             addView(mTaskStackView);
         }
+        enableShake(!isTaskStackEmpty);
 
         // Reset the state
         mAwaitingFirstLayout = !isResumingFromVisible;
