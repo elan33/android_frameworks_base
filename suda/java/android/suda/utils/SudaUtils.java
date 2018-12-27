@@ -42,20 +42,20 @@ public class SudaUtils {
         System.loadLibrary(LIBNAME);
     }
 
-    //2018年法定节假日
-    private static int YEAR = 2018;
+    //2019年法定节假日
+    private static int YEAR = 2019;
     //一月
     private static int[] JANH = {1};
     //二月
-    private static int[] FEBH = {15, 16, 17, 18, 19, 20, 21};
+    private static int[] FEBH = {4, 5, 6, 7, 8, 9, 10};
     //四月
-    private static int[] APRH = {5, 6, 7, 29, 30};
+    private static int[] APRH = {5, 6, 7};
     //五月
     private static int[] MAYH = {1};
     //六月
-    private static int[] JUNH = {16, 17, 18};
+    private static int[] JUNH = {7, 8, 9};
     //九月
-    private static int[] SEPH = {22, 23, 24};
+    private static int[] SEPH = {13, 14, 15};
     //十月
     private static int[] OCTH = {1, 2, 3, 4, 5, 6, 7};
 
